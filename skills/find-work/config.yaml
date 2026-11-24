@@ -1,0 +1,87 @@
+# find-work configuration — team facts the skill and the work-scout agent read.
+# Edit freely; nothing here is secret.
+
+team:
+  name: Diagnosis 3 (Interactive Integration)
+  github_team: DS-DP-S/diagnosis-3
+  jira_project: DIAII
+  jira_site: https://ds-rnd.atlassian.net
+  product: S3809
+  people:            # Jira display names, used to spot unassigned vs teammate work
+    - Chervinsky, Alexander   # PO
+    - Bian, Yongning          # TL
+    - Godari, Kristo          # architect
+    - Yan, Han
+    - Ramidi, Harika
+    - Narang, Kunal
+    - Mane, Nikhil            # me
+
+# What I know well / own — used to rank "good fit for me".
+my_focus:
+  services:
+    - cbct-panoramic-curve-proposal
+    - parl
+    - cbct-anatomy-segmentation
+    - di-segmentation-lro
+    - medical-product-label
+    - medical-marking
+    - di-dx-matching
+    - diagnosis-broker
+  topics:
+    - postgres-lro
+    - WaitOperation
+    - CDS
+    - passport
+    - rollback
+    - smoketest
+    - node pool
+    - compute version
+
+# Extra JQL feeds beyond the DIAII project (cross-project work that lands on us).
+extra_jql:
+  - name: Mentions my services outside DIAII
+    jql: >
+      project != DIAII AND statusCategory != Done AND updated >= -30d AND
+      (text ~ "cbct-panoramic-curve-proposal" OR text ~ "parl-worker" OR text ~ "medical-product-label"
+       OR text ~ "cbct-anatomy-segmentation" OR text ~ "di-segmentation-lro")
+
+# Local clones with a GitHub remote. The scout fetches <remote>/<branch> and greps it
+# with `git grep` — no checkout, working trees untouched.
+repos:
+  - path: ~/Desktop/projects/lightning-core
+    remote: github
+    branch: main
+    owned_paths_from_codeowners: DS-DP-S/lightning-core   # D3 paths read live from GitHub CODEOWNERS
+  - path: ~/Desktop/projects/diagnosis-github
+    remote: origin
+    branch: main
+    # CODEOWNERS here only names diagnostic-apps (all 3 teams), so list D3's dirs explicitly.
+    owned_paths: [services/computation-broker, services/diagnosis-api-gateway, services/pan-curve-editor,
+                  services/downtime-controller, services/data-lifecycle, services/measurement]
+  - path: ~/Desktop/projects/postgres-lro
+    remote: github
+    branch: main
+    owned_paths: ["."]
+
+# Architecture decisions to watch. Confluence has no search tool here, so list page IDs.
+# The scout also discovers more by mining Confluence links out of open epic descriptions
+# and by `text ~ "<AD id>"` Jira searches. Add new ones as you meet them.
+decisions:
+  - id: AD_126
+    title: Unified Storage Format for Computed Data (CDS)
+    page_id: "159865788"
+  - id: MLE_AD_047
+    title: postgres-lro CDS integration (Releases A/B/C)
+    page_id: "166002847"
+  - id: MLE_AD_045
+    title: Integrating CDS into postgres-lro (superseded draft)
+    page_id: "166003507"
+  - id: AD_107
+    title: Rollback support
+  - id: AD_078
+    title: Service-to-service auth (Passport)
+golden_path_queries:     # carto_search kinds=[doc] collection=golden_path
+  - di-dx-matching
+  - computation
+  - panoramic curve
+  - diagnosis
