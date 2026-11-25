@@ -1,4 +1,4 @@
-# agents
+# claude-toolkit
 
 Claude Code skills and subagents I use at work.
 
